@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Queue</title>
+</head>
+<body>
+    <h1>Delayed Queue</h1>
+    <div>
+        <label for="item">Item:</label>
+        <input type="item" id="item" name="item">
+    </div>
+    <div>
+        <label for="delay">Delay (seconds):</label>
+        <input type="number" id="delay" name="delay" min="0" value="">
+    </div>
+    <button onclick="addToQueue()">Run</button>
+    <div id="queue"></div>
+
+    <script>
+        function addToQueue() {
+    var item = document.getElementById('item').value;
+    var delay = document.getElementById('delay').value;
+
+    fetch('/add_item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item: item,
+            delay: delay
+        }),
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+function getQueue() {
+    fetch('/show_items')
+    .then(response => response.json())
+    .then(data => {
+        var queueDiv = document.getElementById('queue');
+        queueDiv.innerHTML = '';
+        data.forEach(item => {
+            queueDiv.innerHTML += '<p>' + item + '</p>';
+        });
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+setInterval(getQueue, 1000);
+
+    </script>
+</body>
+</html>
